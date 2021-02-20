@@ -1,0 +1,160 @@
+const express = require('express')
+const app = express()
+const cors= require('cors')
+const pool = require('./db')
+const ndeb = require('./newdb')
+
+
+//middleware
+app.use(cors())
+app.use(express.json())
+
+//`CREATE TABLE map(user_id SERIAL PRIMARY KEY,usern VARCHAR(255),pass VARCHAR(255));`
+
+async function create(){
+    try {
+        //"INSERT INTO tod (description) VALUES($1) RETURNING *",["matthew"]
+        let all = "SELECT * FROM users"
+        let create ="CREATE TABLE  todo_id SERIAL PRIMARY KEY,description VARCHAR(255),pending VARCHAR(255)"
+      //"UPDATE Uer SET password = $1 WHERE id = $2 RETURNING *", ["kmatthew","matthew"]
+            const newTodo = await pool.query("INSERT INTO map (usern) VALUES($1) RETURNING *",["matthew"]);
+            //let newt = await pool.query("UPDATE tod SET usern = $1 WHERE user_id = $2", [description.des,description.idous])
+            //const newTodo = await pool.query("INSERT INTO tod (description) VALUES($1) RETURNING *",[description.info.descript]);
+            console.log(newTodo.rows)
+
+         
+     } catch (error) {
+         console.log(error.message)
+         
+     }
+}
+
+
+create();
+
+
+//ROUTES//
+app.post('newuser',async (req,res)=>{
+    let a  = {
+        id:req.body.id,
+        password:req.body.password,
+        
+    }
+    const newTodo = await pool.query("INSERT INTO map (usern) VALUES($1) RETURNING *",[a.id]);
+
+})
+
+//get user info and authenticate
+app.post('/adj1oj4nrofri59on/vfdvd/io59jsk/hvb/r93djslv/dnvnr/935920ndl/kvn582d/nfirnf92/4h5602h3b/5hbjldf875/388', async(req,res) =>{
+    let a  = {
+        id:req.body.id,
+        password:req.body.password,
+        
+      }
+     
+      let i =  newTodo = await pool.query("SELECT id FROM Uer"); 
+      let p =  newTodo = await pool.query("SELECT password FROM Uer"); 
+       let i1 =  i.rows[0].id
+       let i2 = p.rows[0].password
+       console.log(i2);
+     if(a.id == i1 &&a.password == i2){
+         let retured = {
+             authenticated:true
+         }
+         console.log("succes");
+         res.json(retured)
+         
+    }else{
+        let returned = {
+            authenticated:false
+        }
+        console.log("failed");
+        res.json(returned)
+    }
+})
+
+
+// CREATE ATODO
+app.post('/todos', async(req,res) =>{
+    try {
+       const description = req.body;
+       console.log(description)
+       const newTodo = await pool.query("INSERT INTO tod (description) VALUES($1) RETURNING *",[description.info.descript]);
+      // const newt = await pool.query("INSERT INTO tod (time) VALUES($1) RETURNING *",[description.info.Time]);
+       res.json(newTodo.rows )
+
+        
+    } catch (error) {
+        console.log(error.message)
+        
+    }
+
+}) 
+
+
+
+//GET ALL TODO
+
+app.get('/todos', async(req,res) =>{
+    try {
+       const allTodos = await pool.query('SELECT * FROM tod ') 
+       res.json(allTodos.rows)
+       
+        
+    } catch (error) {
+        console.log(error.message)
+        
+    }
+
+})
+
+//get a todo
+app.get("/todos/:id", async(req,res) =>{
+    try {
+      const {id} = req.params;
+     const todo = await pool.query("SELECT * FROM tod WHERE todo_id = $1",[id])
+
+     res.json(todo.rows[0])
+        
+    } catch (error) {
+        console.log(error.message)
+    }
+})
+
+
+
+
+//UPDATE TODO
+app.put('/todos/:id', async (req,res) =>{
+    try {
+        const id = req.params;
+      
+        
+        const description = req.body
+        console.log(description)
+        const updatetodo = await pool.query("UPDATE tod SET description = $1 WHERE todo_id = $2", [description.des,description.idous])
+       
+        res.json("todo was updated")
+    } catch (error) {  
+        console.log(error.message) 
+    }
+
+})
+
+
+app.delete('/todos/:id', async(req,res) =>{
+    try {
+        const {id} = req.params;
+        const deleteTodo = await pool.query("DELETE FROM tod WHERE todo_id = $1", [id])
+        res.json("it wass deleted")        
+    } catch (error) {
+        console.log(error.message)
+    }
+})
+
+
+//DELETE A TODO
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Our app is running on port ${ PORT }`);
+});
